@@ -21,7 +21,7 @@ jobs:
             # Black needs clang to compile successfully on Linux. -g0 disables debug
             # which cuts down the wheel size a fair bit!
             extra_environment: "CC=clang CFLAGS=-g0"
-            extra_before_build: "yum install -y clang"
+            extra_before_build: "&& yum install -y clang"
 
     steps:
       - uses: actions/checkout@v2
