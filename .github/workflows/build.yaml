@@ -20,17 +20,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Checkout this repository
-        uses: actions/checkout@v2
-        with:
-          path: .mypyc-support
-
       - name: Checkout requested revision of Black
         uses: actions/checkout@v2
         with:
           repository: psf/black
           ref: "${{ github.event.inputs.revision }}"
           path: "."
+
+      # This MUST go after the initial clone of Black or else it would first clean this
+      # directory and this clone as well before cloning Black.
+      - name: Checkout this repository
+        uses: actions/checkout@v2
+        with:
+          path: .mypyc-support
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v1.12.0
