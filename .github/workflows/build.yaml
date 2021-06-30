@@ -1,0 +1,57 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: Revision from psf/black to compile.
+        required: true
+        default: main 
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        # os: [ubuntu-20.04, windows-2019, macos-10.15]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Checkout this repository
+        uses: actions/checkout@v2
+        with:
+          path: .mypyc-support
+
+      - name: Checkout requested revision of Black
+        uses: actions/checkout@v2
+        with:
+          repository: psf/black
+          ref: "${{ github.event.inputs.revision }}"
+          path: "."
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v1.12.0
+        env:
+          CIBW_BUILD: "cp3*-*"
+          # Skip the following targets:
+          #  - Pythons below 3.6 (cp35-*)
+          #  - PyPy (pp-*)
+          #  - 32-bit (*-manylinux_i686 *-win32)
+          CIBW_SKIP: "*-manylinux_i686 *-win32 cp35-* pp-*"
+          # The double negative is counterintuitive, https://github.com/pypa/pip/issues/5735.
+          CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no"
+
+          CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt"
+
+          CIBW_BEFORE_TEST: "pip install -r test_requirements.txt"
+          CIBW_TEST_COMMAND: "pytest"
+          CIBW_TEST_EXTRAS: "python2,d"
+
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.6.2"
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ./wheelhouse/*.whl
