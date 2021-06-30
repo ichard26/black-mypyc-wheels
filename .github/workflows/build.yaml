@@ -18,7 +18,10 @@ jobs:
         # os: [ubuntu-20.04, windows-2019, macos-10.15]
         include:
           - os: ubuntu-20.04
+            # Black needs clang to compile successfully on Linux. -g0 disables debug
+            # which cuts down the wheel size a fair bit!
             extra_environment: "CC=clang CFLAGS=-g0"
+            extra_before_build: "yum install -y clang"
 
     steps:
       - uses: actions/checkout@v2
@@ -49,10 +52,7 @@ jobs:
 
           # The double negative is counterintuitive, https://github.com/pypa/pip/issues/5735.
           CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
-
-          CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt"
-          # Black needs clang to compile successfully on Linux. 
-          CIBW_BEFORE_BUILD_LINUX: "yum install -y clang"
+          CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
 
           CIBW_BEFORE_TEST: "pip install -r test_requirements.txt"
           CIBW_TEST_COMMAND: "pytest"
