@@ -55,10 +55,11 @@ jobs:
           CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
 
           CIBW_BEFORE_TEST: "pip install -r test_requirements.txt"
-          CIBW_TEST_COMMAND: "pytest"
+          CIBW_TEST_COMMAND: "pytest tests/"
           CIBW_TEST_EXTRAS: "python2,d"
 
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.6.2"
+          CIBW_BUILD_VERBOSITY: 1
 
       - uses: actions/upload-artifact@v2
         with:
