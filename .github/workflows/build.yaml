@@ -16,6 +16,9 @@ jobs:
       matrix:
         os: [ubuntu-20.04]
         # os: [ubuntu-20.04, windows-2019, macos-10.15]
+        include:
+          - os: ubuntu-20.04
+            extra_environment: "CC=clang CFLAGS=-g0"
 
     steps:
       - uses: actions/checkout@v2
@@ -45,8 +48,7 @@ jobs:
           CIBW_SKIP: "*-manylinux_i686 *-win32 cp35-* pp-*"
 
           # The double negative is counterintuitive, https://github.com/pypa/pip/issues/5735.
-          CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no"
-          CIBW_ENVIRONMENT_LINUX: "CC=clang CFLAGS=-g0"
+          CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
 
           CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt"
           # Black needs clang to compile successfully on Linux. 
