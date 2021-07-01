@@ -17,12 +17,12 @@ jobs:
         os: [windows-2019]
         # os: [ubuntu-20.04, windows-2019, macos-10.15]
         include:
-          - os: ubuntu-20.04
-            platform: Linux
+          # - os: ubuntu-20.04
+          #   platform: Linux
             # Black needs clang to compile successfully on Linux. -g0 disables debug
             # which cuts down the wheel size a fair bit!
-            extra_environment: "CC=clang CFLAGS=-g0"
-            extra_before_build: "&& yum install -y clang"
+            # extra_environment: "CC=clang CFLAGS=-g0"
+            # extra_before_build: "&& yum install -y clang"
 
           - os: windows-2019
             platform: Windows
@@ -43,6 +43,10 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: .mypyc-support
+
+      - name: Install Visual C++ Redistributable 2015-2019
+        if: startsWith( ${{ matrix.os }} , "windows")
+        run: choco install vcredist140
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v1.12.0
