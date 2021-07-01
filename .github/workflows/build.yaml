@@ -29,10 +29,8 @@ jobs:
             # For some reason, (compiled) mypyc is failing to start up with
             # "ImportError: DLL load failed: A dynamic link library (DLL) initialization routine failed."
             # on Windows for at least 3.6. Let's just use interpreted mypy[c].
-            # TODO: I know this isn't perfect since ALL of the build dependencies are
-            # forced be installed via sdists, but I don't feel like special casing mypy
-            # right now. See also: https://github.com/mypyc/mypyc/issues/819.
-            extra_before_build: "--no-binary"
+            # See also: https://github.com/mypyc/mypyc/issues/819.
+            extra_before_build: "--no-binary mypy"
 
     steps:
       - uses: actions/checkout@v2
