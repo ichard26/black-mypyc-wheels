@@ -65,6 +65,8 @@ jobs:
 
           CIBW_BEFORE_TEST: "pip install -r .mypyc-support/test-requirements.txt"
           CIBW_TEST_COMMAND: "pytest {project}/tests -k 'not incompatible_with_mypyc'"
+          # Hi Windows backslashes ...
+          CIBW_TEST_COMMAND_WINDOWS: "pytest {project}\\tests -k 'not incompatible_with_mypyc'"
           CIBW_TEST_EXTRAS: "python2,d"
 
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.6.2"
