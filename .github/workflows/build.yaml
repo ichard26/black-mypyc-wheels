@@ -46,7 +46,7 @@ jobs:
 
       - name: Install Visual C++ Redistributable 2015-2019
         if: startsWith( ${{ matrix.os }} , "windows")
-        run: choco install vcredist140
+        run: choco install vcredist140 --force
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v1.12.0
