@@ -6,7 +6,7 @@ on:
       revision:
         description: Revision from psf/black to compile.
         required: true
-        default: main 
+        default: mypyc-support-pt2 
 
 jobs:
   build:
@@ -54,8 +54,8 @@ jobs:
           CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
           CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
 
-          CIBW_BEFORE_TEST: "pip install -r test_requirements.txt"
-          CIBW_TEST_COMMAND: "pytest tests/"
+          CIBW_BEFORE_TEST: "pip install -r .mypyc-support/test-requirements.txt"
+          CIBW_TEST_COMMAND: "pytest {project}/tests -k 'not incompatible_with_mypyc'"
           CIBW_TEST_EXTRAS: "python2,d"
 
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.6.2"
