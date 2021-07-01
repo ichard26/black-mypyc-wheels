@@ -14,14 +14,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04]
+        os: [windows-2019]
         # os: [ubuntu-20.04, windows-2019, macos-10.15]
         include:
           - os: ubuntu-20.04
+            platform: Linux
             # Black needs clang to compile successfully on Linux. -g0 disables debug
             # which cuts down the wheel size a fair bit!
             extra_environment: "CC=clang CFLAGS=-g0"
             extra_before_build: "&& yum install -y clang"
+
+          - os: windows-2019
+            platform: Windows
 
     steps:
       - uses: actions/checkout@v2
@@ -45,10 +49,10 @@ jobs:
         env:
           CIBW_BUILD: "cp3*-*"
           # Skip the following targets:
-          #  - Pythons below 3.6 (cp35-*)
+          #  - Pythons below 3.6 (CIBW_PROJECT_REQUIRES_PYTHON below)
           #  - PyPy (pp-*)
           #  - 32-bit (*-manylinux_i686 *-win32)
-          CIBW_SKIP: "*-manylinux_i686 *-win32 cp35-* pp-*"
+          CIBW_SKIP: "*-manylinux_i686 *-win32 pp-*"
 
           # The double negative is counterintuitive, https://github.com/pypa/pip/issues/5735.
           CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
@@ -63,4 +67,5 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
+          name: ${{ matrix.platform }} wheels
           path: ./wheelhouse/*.whl
