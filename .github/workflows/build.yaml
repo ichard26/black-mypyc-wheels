@@ -1,4 +1,4 @@
-name: Build
+name: Build wheels
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
       revision:
         description: Revision from psf/black to compile.
         required: true
-        default: mypyc-support-pt2 
+        default: mypyc-support-pt2
 
 jobs:
   build:
@@ -16,22 +16,32 @@ jobs:
       matrix:
         include:
           # - os: ubuntu-20.04
-          #   platform: linux
+          #   name: linux
             # Black needs clang to compile successfully on Linux. -g0 disables debug symbols
             # which cuts down the wheel size a fair bit!
             # extra_environment: "CC=clang CFLAGS=-g0"
             # extra_before_build: "&& yum install -y clang"
 
           # - os: windows-2019
-          #   platform: windows
+          #   name: windows
             # For some reason, (compiled) mypyc is failing to start up with
             # "ImportError: DLL load failed: A dynamic link library (DLL) initialization routine failed."
             # on Windows for at least 3.6. Let's just use interpreted mypy[c].
             # See also: https://github.com/mypyc/mypyc/issues/819.
             # extra_before_build: "--no-binary mypy"
 
+
+          # Split MacOS builds between two jobs since there's a lot of wheels to build!
+          # - os: macos-10.15
+            # name: macos
+            # macos_arch: "x86_64"
+            # extra_environment: "CFLAGS=-g0"
+
           - os: macos-10.15
-            platform: macos
+            name: macos-arm
+            # Support Apple Silicon via cross-compiling on Intel. Unfornately arm64 can't
+            # be tested on Intel so we'll have to skip them (see below).
+            macos_arch: "arm64 universal2"
             extra_environment: "CFLAGS=-g0"
 
     steps:
@@ -54,14 +64,13 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v1.12.0
         env:
+          # So these are the environments we are targeting:
+          # - CPython 3.6 and higher (no PyPy)
+          # - 64-bit only
+          # - ARCH: amd64, x86_64, and universal2
+          # - OSes: Linux, Windows, and MacOS
           CIBW_BUILD: "cp3*-*"
-          # Support Apple Silicon via cross-compiling on Intel. Unfornately arm64 can't
-          # be tested on Intel so we'll have to skip them (see below).
-          CIBW_ARCHS_MACOSx: "x86_64 arm64 universal2"
-          # Skip the following targets:
-          #  - Pythons below 3.6 (CIBW_PROJECT_REQUIRES_PYTHON below)
-          #  - PyPy (pp-*)
-          #  - 32-bit (*-manylinux_i686 *-win32)
+          CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
           CIBW_SKIP: "*-manylinux_i686 *-win32 pp-*"
 
           # The double negative is counterintuitive, https://github.com/pypa/pip/issues/5735.
@@ -71,7 +80,7 @@ jobs:
           CIBW_BEFORE_TEST: "pip install -r .mypyc-support/test-requirements.txt"
           CIBW_TEST_COMMAND: 'pytest {project} -k "not incompatible_with_mypyc"'
           CIBW_TEST_EXTRAS: "python2,d"
-          # Skip trying to test arm64 builds on Intel Macs
+          # Skip trying to test arm64 builds on Intel Macs.
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2:arm64"
 
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.6.2"
@@ -79,5 +88,5 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.platform }}-wheels
+          name: ${{ matrix.name }}-wheels
           path: ./wheelhouse/*.whl
