@@ -15,12 +15,12 @@ jobs:
     strategy:
       matrix:
         include:
-          # - os: ubuntu-20.04
-          #   name: linux
+          - os: ubuntu-20.04
+            name: linux
             # Black needs clang to compile successfully on Linux. -g0 disables debug symbols
             # which cuts down the wheel size a fair bit!
-            # extra_environment: "CC=clang CFLAGS=-g0"
-            # extra_before_build: "&& yum install -y clang"
+            extra_environment: "CC=clang CFLAGS=-g0"
+            extra_before_build: "&& yum install -y clang"
 
           - os: windows-2019
             name: windows
@@ -31,17 +31,17 @@ jobs:
             extra_before_build: "--no-binary mypy"
 
           # Split MacOS builds between two jobs since there's a lot of wheels to build!
-          # - os: macos-10.15
-            # name: macos-intel
-            # macos_arch: "x86_64"
-            # extra_environment: "CFLAGS=-g0"
+          - os: macos-10.15
+            name: macos-intel
+            macos_arch: "x86_64"
+            extra_environment: "CFLAGS=-g0"
 
-          # - os: macos-10.15
-          #   name: macos-arm
+          - os: macos-10.15
+            name: macos-arm
             # Support Apple Silicon via cross-compiling on Intel. Unfornately arm64 can't
             # be tested on Intel so we'll have to skip them (see below).
-            # macos_arch: "arm64 universal2"
-            # extra_environment: "CFLAGS=-g0"
+            macos_arch: "arm64 universal2"
+            extra_environment: "CFLAGS=-g0"
 
     steps:
       - uses: actions/checkout@v2
