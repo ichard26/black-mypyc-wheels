@@ -52,6 +52,10 @@ jobs:
           repository: psf/black
           ref: "${{ github.event.inputs.revision }}"
           path: "."
+          # setuptools-scm needs the commit (or tag?) history to be able to determine
+          # how a distribution should be versioned, and sadly I can't find a way to
+          # do a treeless or blobless clone with actions/checkout ._.
+          fetch-depth: 0
 
       # This MUST go after the initial clone of Black or else it would first clean this
       # directory and this clone as well before cloning Black.
