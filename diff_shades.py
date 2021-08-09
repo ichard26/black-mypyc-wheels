@@ -159,15 +159,41 @@ class Project:
 
 
 PROJECTS: Final = [
-    Project("blackbench", "https://github.com/ichard26/blackbench.git"),
-    Project("black", "https://github.com/psf/black.git"),
     Project("aioexabgp", "https://github.com/cooperlees/aioexabgp.git"),
-    # Project("attrs", "https://github.com/python-attrs/attrs.git"),
+    Project("attrs", "https://github.com/python-attrs/attrs.git"),
+    Project("bandersnatch", "https://github.com/pypa/bandersnatch.git"),
+    Project("blackbench", "https://github.com/ichard26/blackbench.git"),
     Project("channel", "https://github.com/django/channels.git"),
-    # Project("bandersnatch", "https://github.com/pypa/bandersnatch.git"),
+    Project(
+        "django", "https://github.com/django/django.git",
+        custom_arguments=[
+            "--skip-string-normalization",
+            "--extend-exclude",
+            "/((docs|scripts)/|django/forms/models.py|tests/gis_tests/test_spatialrefsys.py|tests/test_runner_apps/tagged/tests_syntax_error.py)"
+        ],
+        python_requires=">=3.8"
+    ),
     Project("flake8-bugbear", "https://github.com/PyCQA/flake8-bugbear.git"),
-    # Project("typeshed", "https://github.com/python/typeshed.git"),
+    Project("hypothesis", "https://github.com/HypothesisWorks/hypothesis.git"),
+    Project("pandas", "https://github.com/pandas-dev/pandas.git"),
+    Project("pillow", "https://github.com/python-pillow/Pillow.git"),
+    Project("poetry", "https://github.com/python-poetry/poetry.git"),
+    Project("pyanalyze", "https://github.com/quora/pyanalyze.git"),
+    Project("pyramid", "https://github.com/Pylons/pyramid.git"),
+    Project("ptr", "https://github.com/facebookincubator/ptr.git"),
+    Project("pytest", "https://github.com/pytest-dev/pytest.git"),
+    Project("scikit-lego", "https://github.com/koaning/scikit-lego"),
+    Project("sqlalchemy", "https://github.com/sqlalchemy/sqlalchemy.git"),
+    Project("tox", "https://github.com/tox-dev/tox.git"),
+    Project("typeshed", "https://github.com/python/typeshed.git"),
+    Project("virtualenv", "https://github.com/pypa/virtualenv.git"),
+    Project("warehouse", "https://github.com/pypa/warehouse.git")
 ]
+for p in PROJECTS:
+    if p.custom_arguments is None:
+        p.custom_arguments = ["--experimental-string-processing"]
+    else:
+        p.custom_arguments.append("--experimental-string-processing")
 
 
 def setup_projects(projects: List[Project], workdir: Path) -> List[Tuple[Project, Path]]:
@@ -403,7 +429,8 @@ def main(color: Optional[bool]):
 
     \b
     Potential feature additions:
-     - full support for mypyc compiled black
+     - jupyter notebook support
+     - per-project python_requires support
      - even more helpful output
      - stronger diffing abilities
      - better UX (particularly when things go wrong)
@@ -419,7 +446,12 @@ def main(color: Optional[bool]):
 @click.option(
     "-p", "--project",
     multiple=True,
-    help="Filter projects."
+    help="Select projects from the main list."
+)
+@click.option(
+    "-e", "--exclude",
+    multiple=True,
+    help="Exclude projects from running."
 )
 @click.option(
     "-w", "--work-dir",
@@ -442,6 +474,7 @@ def main(color: Optional[bool]):
 def analyze(
     result_filepath: Path,
     project: List[str],
+    exclude: List[str],
     work_dir: Optional[Path],
     repeat_projects_from: Optional[Path]
 ) -> None:
@@ -464,6 +497,9 @@ def analyze(
         projects = [Project(**proj.metadata) for proj in AnalysisData(data).projects.values()]
     else:
         projects = PROJECTS
+    if exclude:
+        excluders = [e.casefold().strip() for e in exclude]
+        projects = [p for p in projects if p.name not in excluders]
     if project:
         selectors = [p.casefold().strip() for p in project]
         projects = [p for p in projects if p.name in selectors]
@@ -588,7 +624,8 @@ def compare(file_one, file_two, verbose: int) -> None:
     for name, base_project in base.projects.items():
         other_project = other.projects[name]
         assert not set(base_project.files) ^ set(other_project.files), name
-        secho(f"{name} ({len(base_project.files)} files): ", bold=True, nl=False)
+        secho(f"{name} ", bold=True, nl=False)
+        emit_msg(f"({len(base_project.files)} files): ", nl=False)
         if base_project.metadata != other_project.metadata:
             secho("SKIPPED (due to mismatched project configuration)", dim=True)
             continue
