@@ -1,15 +1,16 @@
 # Black + mypyc
 
-Hello! You've found the home base for the ongoing work getting [psf/black][black] compiled with
-[mypyc][mypyc]. Mypyc is a compiler for typed Python code. The end goal is to increase runtime
-performance and import times. Since Black is already a well typed project with type checking
-provided by mypy, mypyc won out over other options like Cython. Although using mypyc isn't
-all smooth sailing, there's a lot of infrastructural and tuning work to be done (not to
-mention compatibility work since mypyc is in alpha). All of that is tracked here.
+Hello! You've found the home base for the ongoing work getting [psf/black][black]
+compiled with [mypyc][mypyc]. Mypyc is a compiler for typed Python code. The
+end goal is to increase runtime performance. Since Black is already a well
+typed project with type checking provided by mypy, mypyc won out over other
+options like Cython. Although using mypyc isn't all smooth sailing, there's a
+lot of infrastructural and tuning work to be done (not to mention compatibility
+work since mypyc is in alpha). All of that is tracked here.
 
 The issue tracker details specific TO-DOs and goals, while the
-["Getting Black compiled with mypyc"][project-board] project is intended as a general overview
-of what has been done and what's still pending.
+["Getting Black compiled with mypyc"][project-board] project is intended as
+a general overview of what has been done and what's still pending.
 
 ## Performance status
 
@@ -46,7 +47,7 @@ numbers have been collected:
 - Importing black: 1.14x faster (this one is a very rough figure)
 - blib2to3 parsing: 1.72x faster
 
-System was tuned with `isol_cpus=1`, `rcu_nocbs=1`, `nohz_full=1`, and a fixed CPU
+System was tuned with `isolcpus=1`, `rcu_nocbs=1`, `nohz_full=1`, and a fixed CPU
 frequency.
 
 Benchmark results are in part from [blackbench][blackbench], an in-development
