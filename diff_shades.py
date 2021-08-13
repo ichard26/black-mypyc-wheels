@@ -616,13 +616,17 @@ def compare(file_one, file_two, verbose: int) -> None:
     other = AnalysisData(json.load(file_two))
     secho("done\n")
     if set(base.projects) ^ set(other.projects):
-        secho("ERROR: the two files don't contain the same projects:", fg="red", bold=True)
-        secho(f"  {file_one.name}: {', '.join(base.data['projects'].keys())}")
-        secho(f"  {file_two.name}: {', '.join(other.data['projects'].keys())}")
-        sys.exit(1)
+        secho("WARNING: the two files don't contain the same projects:", fg="yellow", bold=True)
+        secho(f"  {style(file_one.name, bold=True)}: {', '.join(base.data['projects'].keys())}")
+        secho(f"  {style(file_two.name, bold=True)}: {', '.join(other.data['projects'].keys())}")
+        emit_msg.newline()
 
     for name, base_project in base.projects.items():
-        other_project = other.projects[name]
+        try:
+            other_project = other.projects[name]
+        except KeyError:
+            continue
+
         assert not set(base_project.files) ^ set(other_project.files), name
         secho(f"{name} ", bold=True, nl=False)
         emit_msg(f"({len(base_project.files)} files): ", nl=False)
