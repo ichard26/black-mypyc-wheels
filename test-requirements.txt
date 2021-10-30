@@ -2,6 +2,3 @@
 # `test_requirements.txt`? Well it pulls in stuff we don't need and that
 # slows the down testing phase quite a bit.
 pytest >= 6.1.1
-pytest-mock >= 3.3.1
-pytest-cases >= 2.3.0
-parameterized >= 0.7.4
