@@ -74,7 +74,8 @@ jobs:
           # - OSes: Linux (no musl), Windows, and MacOS
           CIBW_BUILD: "cp3*-*"
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
-          CIBW_SKIP: "*-manylinux_i686 *-musllinux_* *-win32 pp-*"
+          # MSVC really hates mypyc's C support library on Python 3.10 :shrug:
+          CIBW_SKIP: "*-manylinux_i686 *-musllinux_* *-win32 pp-* cp310-win_amd64"
 
           # The double negative is counterintuitive, https://github.com/pypa/pip/issues/5735.
           CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
