@@ -70,11 +70,11 @@ jobs:
           # So these are the environments we are targeting:
           # - CPython 3.6 and higher (no PyPy)
           # - 64-bit only
-          # - ARCH: amd64, x86_64, and universal2
-          # - OSes: Linux, Windows, and MacOS
+          # - ARCH: amd64, x86_64, universal2, and arm64
+          # - OSes: Linux (no musl), Windows, and MacOS
           CIBW_BUILD: "cp3*-*"
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
-          CIBW_SKIP: "*-manylinux_i686 *-win32 pp-*"
+          CIBW_SKIP: "*-manylinux_i686 *-musllinux_* *-win32 pp-*"
 
           # The double negative is counterintuitive, https://github.com/pypa/pip/issues/5735.
           CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
