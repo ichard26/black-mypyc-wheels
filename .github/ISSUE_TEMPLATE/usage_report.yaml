@@ -1,0 +1,61 @@
+name: "Field user report"
+description: "Use this to file a report letting me know how well the mypyc wheels worked for you!"
+title: "[Field report]: "
+labels: ["A: field report"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for taking the time to fill out this field report!"
+
+  - type: input
+    id: tested-revision
+    attributes:
+      label: "Tested revision"
+      description: "Run `black --version` and copy the version. Since I might change out the set of mypyc wheels being tested (to reflect new changes on main) I need to keep track of what revisions are well tested and ones that aren't."
+      placeholder: "e.g. 21.10b1.dev5+g3367822"
+    validations:
+      required: true
+
+  - type: input
+    id: environment-python-version
+    attributes:
+      label: "Environment - Python version"
+      description: "What version of Python did you use?"
+      placeholder: "e.g. Python 3.8.5"
+    validations:
+      required: true
+
+  - type: input
+    id: environment-os-and-arch
+    attributes:
+      label: "Environment - OS & Architecture"
+      description: "What operating system did you use? If you happen to know the architecture of your system please write it down too (**highly encouraged for MacOS respondants**)!"
+      placeholder: "e.g. Ubuntu 20.04 x86_64"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: what-did-it-do-summary
+    attributes:
+      label: "Overall notes"
+      options:
+        - label: "Did you observe a performance improvement w/ the compiled wheels?"
+          required: true
+        - label: "Did you experience a crash or other flaky behaviour w/ the compiled wheels?"
+          required: true
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: "Additional commentary & notes"
+      description: "Feel free to explain your use case, environment, weird bugs or crashes, thoughts on this project in further detail here."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: diff-shades-result
+    attributes:
+      label: Diff-shades result (extra, totally not required)
+      options:
+        - label: "Did you run diff-shades, and if so did it report no changes between the known good analysis and your local analysis?"
+          required: false
