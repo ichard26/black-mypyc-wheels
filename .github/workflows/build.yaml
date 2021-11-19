@@ -6,7 +6,7 @@ on:
       revision:
         description: Revision from psf/black to compile.
         required: true
-        default: mypyc-support-pt2
+        default: main
 
 jobs:
   build:
@@ -56,6 +56,9 @@ jobs:
           # how a distribution should be versioned, and sadly I can't find a way to
           # do a treeless or blobless clone with actions/checkout ._.
           fetch-depth: 0
+
+      - name: Print debug information
+        run: git show HEAD --stat
 
       # This MUST go after the initial clone of Black or else it would first clean this
       # directory and this clone as well before cloning Black.
