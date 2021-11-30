@@ -14,44 +14,7 @@ a general overview of what has been done and what's still pending.
 
 ## Performance status
 
-While there's still a lot performance tuning and testing work to be done, some initial
-numbers have been collected:
-
-<details>
-
-<summary>System metadata</summary>
-
-```text
-- aslr: Full randomization
-- boot_time: 2021-06-29 17:11:34
-- cpu_affinity: 1
-- cpu_config: 1=driver:acpi-cpufreq, governor:userspace, isolated; idle:acpi_idle
-- cpu_count: 2
-- cpu_model_name: AMD A6-9220 RADEON R4, 5 COMPUTE CORES 2C+3G
-- hostname: acer-ubuntu
-- perf_version: 2.2.0
-- platform: Linux-5.8.0-59-generic-x86_64-with-glibc2.29
-- python_cflags: -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall
-- python_compiler: GCC 9.3.0
-- python_executable: /home/ichard26/.local/share/virtualenvs/black-Q9x7i-w-/bin/python
-- python_implementation: cpython
-- python_version: 3.8.5 (64-bit)
-- timer: clock_gettime(CLOCK_MONOTONIC), resolution: 1.00 ns
-- unit: second
-```
-
-</details>
-
-- Formatting with safety checks: 1.74x faster
-- Formatting without safety checks: 1.90x faster
-- Importing black: 1.14x faster (this one is a very rough figure)
-- blib2to3 parsing: 1.72x faster
-
-System was tuned with `isolcpus=1`, `rcu_nocbs=1`, `nohz_full=1`, and a fixed CPU
-frequency.
-
-Benchmark results are in part from [blackbench][blackbench], an in-development
-benchmarking suite for Black.
+See the latest performance report here: https://gist.github.com/ichard26/b996ccf410422b44fcd80fb158e05b0d
 
 ## Acknowledgements
 
