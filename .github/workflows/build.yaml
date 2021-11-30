@@ -68,7 +68,7 @@ jobs:
           path: .mypyc-support
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.2.2
+        uses: pypa/cibuildwheel@v2.3.0
         env:
           # So these are the environments we are targeting:
           # - CPython 3.6 and higher (no PyPy)
