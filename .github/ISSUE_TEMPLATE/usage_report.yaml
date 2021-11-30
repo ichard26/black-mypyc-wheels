@@ -1,7 +1,7 @@
 name: "Field user report"
 description: "Use this to file a report letting me know how well the mypyc wheels worked for you!"
-title: "[Field report]: "
-labels: ["A: field report"]
+title: "[Field report]: *summary-of-your-experience*"
+labels: ["T: field report"]
 body:
   - type: markdown
     attributes:
@@ -40,9 +40,9 @@ body:
       label: "Overall notes"
       options:
         - label: "Did you observe a performance improvement w/ the compiled wheels?"
-          required: true
+          required: false
         - label: "Did you experience a crash or other flaky behaviour w/ the compiled wheels?"
-          required: true
+          required: false
 
   - type: textarea
     id: additional-info
