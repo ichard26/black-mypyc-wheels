@@ -85,7 +85,7 @@ jobs:
           CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
 
           CIBW_BEFORE_TEST: "pip install tox"
-          CIBW_TEST_COMMAND: 'cd {project} && tox -e ci-py --installpkg {wheel} -- -v -k "not incompatible_with_mypyc"'
+          CIBW_TEST_COMMAND: "cd {project} && tox -e ci-py --installpkg {wheel} -- -v -k \"not incompatible_with_mypy\""
           # Skip trying to test arm64 builds on Intel Macs.
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2:arm64"
 
