@@ -68,7 +68,7 @@ jobs:
           path: .mypyc-support
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.3.0
+        uses: pypa/cibuildwheel@v2.2.2
         env:
           # So these are the environments we are targeting:
           # - CPython 3.6 and higher (no PyPy)
@@ -84,8 +84,9 @@ jobs:
           CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
           CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
 
-          CIBW_BEFORE_TEST: "pip install tox"
-          CIBW_TEST_COMMAND: 'cd {project} && tox -e ci-py --installpkg {wheel} -- -v -k "not incompatible_with_mypy"'
+          CIBW_BEFORE_TEST: "pip install -r .mypyc-support/test-requirements.txt"
+          CIBW_TEST_COMMAND: 'pytest {project} -k "not incompatible_with_mypyc"'
+          CIBW_TEST_EXTRAS: "python2,d,jupyter"
           # Skip trying to test arm64 builds on Intel Macs.
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2:arm64"
 
