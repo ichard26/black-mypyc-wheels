@@ -51,11 +51,3 @@ body:
       description: "Feel free to explain your use case, environment, weird bugs or crashes, thoughts on this project in further detail here."
     validations:
       required: false
-
-  - type: checkboxes
-    id: diff-shades-result
-    attributes:
-      label: Diff-shades result (extra, totally not required)
-      options:
-        - label: "Did you run diff-shades, and if so did it report no changes between the known good analysis and your local analysis?"
-          required: false
