@@ -1,6 +1,6 @@
 # mypy == 0.910
 # mypy's release process is somehow worse than Black's now :(
-https://github.com/python/mypy/archive/d7c4e6908c71a45e6fab73887b3d1a42a7848247.zip
+https://github.com/python/mypy/archive/7a5c6f0bdbd50757ffe0a826bd758f0d44780607.zip
 
 # A bunch of packages for type annotation information
 mypy-extensions >= 0.4.3
