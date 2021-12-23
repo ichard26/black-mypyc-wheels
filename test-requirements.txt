@@ -1,4 +1,4 @@
 # This is the bare minimum needed to run the test suite. Why not just use
-# `test_requirements.txt`? Well it pulls in stuff we don't need and that
-# slows the down testing phase quite a bit.
+# black's own `test_requirements.txt`? Well it pulls in stuff we don't
+# need here for testing and that slows down the testing phase quite a bit.
 pytest >= 6.1.1
