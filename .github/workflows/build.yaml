@@ -104,6 +104,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ".known-good.analysis.json"
+          path: ".known-good.analysis.json"
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.3.1
