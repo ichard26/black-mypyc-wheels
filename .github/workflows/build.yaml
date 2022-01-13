@@ -9,8 +9,37 @@ on:
         default: main
 
 jobs:
+  prep:
+    name: "analyze interpreted Black w/ diff-shades"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout requested revision of Black
+        uses: actions/checkout@v2
+        with:
+          repository: psf/black
+          ref: "${{ github.event.inputs.revision }}"
+          path: "."
+
+      - uses: actions/setup-python@v2
+
+      - name: Install diff-shades
+        run: python -m pip install https://github.com/ichard26/diff-shades/archive/stable.zip
+
+      - name: Install requested revision of Black
+        run: python -m pip install .[jupyter]
+
+      - name: Analyze request revision of Black
+        run: diff-shades analyze .known-good.analysis.json -v
+
+      - name: Upload known good analysis
+        uses: actions/upload-artifact@v2
+        with:
+          name: .known-good.analysis.json
+          path: .known-good.analysis.json
+
   build:
     name: ${{ matrix.name }} (${{ matrix.os }})
+    needs: prep
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -47,7 +76,6 @@ jobs:
             macos_arch: "universal2"
             extra_environment: "CFLAGS=-g0"
 
-
     steps:
       - uses: actions/checkout@v2
 
@@ -72,8 +100,13 @@ jobs:
         with:
           path: .mypyc-support
 
+      - name: Download known good analysis
+        uses: actions/download-artifact@v2
+        with:
+          name: ".known-good.analysis.json"
+
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.3.0
+        uses: pypa/cibuildwheel@v2.3.1
         env:
           # So these are the environments we are targeting:
           # - CPython 3.6 and higher (no PyPy)
@@ -89,8 +122,8 @@ jobs:
           CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
 
           CIBW_BEFORE_TEST: "pip install -r .mypyc-support/test-requirements.txt"
-          CIBW_TEST_COMMAND: 'pytest {project} -k "not incompatible_with_mypyc"'
-          CIBW_TEST_EXTRAS: "python2,d,jupyter"
+          CIBW_TEST_COMMAND: "python test_runner.py .known-good.analysis.json"
+          CIBW_TEST_EXTRAS: "d,jupyter"
           # Skip trying to test arm64 builds on Intel Macs.
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2:arm64"
 
