@@ -2,3 +2,7 @@
 # black's own `test_requirements.txt`? Well it pulls in stuff we don't
 # need here for testing and that slows down the testing phase quite a bit.
 pytest >= 6.1.1
+
+# Used to assert compiled Black doesn't behave differently on a wide
+# selection of OSS code.
+https://github.com/ichard26/diff-shades/archive/stable.zip
