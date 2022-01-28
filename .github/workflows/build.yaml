@@ -100,6 +100,11 @@ jobs:
         with:
           path: .mypyc-support
 
+      - name: Prepare black for compilation
+        run: |
+           python -m pip install tomli tomli_w
+           python .mypyc-support/prep_black.py
+
       - name: Download known good analysis
         uses: actions/download-artifact@v2
         with:
@@ -118,11 +123,10 @@ jobs:
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
           CIBW_SKIP: "*-manylinux_i686 *-musllinux_* *-win32 pp-*"
 
-          # The double negative is counterintuitive, https://github.com/pypa/pip/issues/5735.
-          CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
+          CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 ${{ matrix.extra_environment }}"
           CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
 
-          CIBW_BEFORE_TEST: "PIP_NO_BUILD_ISOLATION=yes ; pip install -r .mypyc-support/test-requirements.txt ; PIP_NO_BUILD_ISOLATION=no"
+          CIBW_BEFORE_TEST: "pip install -r .mypyc-support/test-requirements.txt"
           CIBW_TEST_COMMAND: "cd {project} ; python .mypyc-support/test_runner.py .known-good.analysis.json"
           CIBW_TEST_EXTRAS: "d,jupyter"
           # Skip trying to test arm64 builds on Intel Macs.
