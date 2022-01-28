@@ -15,6 +15,8 @@ def main(good_analysis: str) -> None:
         "-k", "not incompatible_with_mypyc", "--color=yes", "-v"
     ]
     subprocess.run(cmd, check=True)
+    if sys.version_info <= (3, 6):
+        return
 
     sys.stdout.flush()
     print("===== [DIFF-SHADES - ANALYZE NEWLY BUILT WHEEL] ===== ", flush=True)
