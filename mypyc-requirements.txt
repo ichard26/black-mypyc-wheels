@@ -13,5 +13,4 @@ click >= 8.0.0
 platformdirs >= 2.1.0
 
 # And because build isolation is disabled, we'll need to pull this too:
-# setuptools-scm
-# (edit: actually not anymore!)
+setuptools-scm

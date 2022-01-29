@@ -121,10 +121,10 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Prepare black for compilation
-        run: |
-           python -m pip install tomli tomli_w
-           python .mypyc-support/prep_black.py
+      # - name: Prepare black for compilation
+      #   run: |
+      #      python -m pip install tomli tomli_w
+      #      python .mypyc-support/prep_black.py
 
       - name: Download known good analysis
         uses: actions/download-artifact@v2
@@ -133,7 +133,7 @@ jobs:
           path: ".known-good.analysis.json"
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.3.1
+        uses: pypa/cibuildwheel@v2.3.0
         env:
           # So these are the environments we are targeting:
           # - CPython 3.6 and higher (no PyPy)
@@ -144,12 +144,12 @@ jobs:
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
           CIBW_SKIP: "*-manylinux_i686 *-musllinux_* *-win32 pp-*"
 
-          CIBW_MANYLINUX_X86_64_IMAGE: 'quay.io/pypa/manylinux2014_x86_64:2021-11-20-f410d11'
+          # CIBW_MANYLINUX_X86_64_IMAGE: 'quay.io/pypa/manylinux2014_x86_64:2021-11-20-f410d11'
 
-          CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 ${{ matrix.extra_environment }}"
+          CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
           CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
 
-          CIBW_BEFORE_TEST: "pip install -r .mypyc-support/test-requirements.txt"
+          CIBW_BEFORE_TEST: "PIP_NO_BUILD_ISOLATION=yes pip install -r .mypyc-support/test-requirements.txt"
           CIBW_TEST_COMMAND: "cd {project} ; python .mypyc-support/test_runner.py .known-good.analysis.json"
           CIBW_TEST_EXTRAS: "d,jupyter"
           # Skip trying to test arm64 builds on Intel Macs.
