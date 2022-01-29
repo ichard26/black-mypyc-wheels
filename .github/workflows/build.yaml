@@ -150,7 +150,7 @@ jobs:
           CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
 
           CIBW_BEFORE_TEST: "pip install -r .mypyc-support/test-requirements.txt"
-          CIBW_TEST_COMMAND: "cd {project} ; python .mypyc-support/test_runner.py"
+          CIBW_TEST_COMMAND: 'pytest {project} -k "not incompatible_with_mypyc"'
           CIBW_TEST_EXTRAS: "d,jupyter"
           # Skip trying to test arm64 builds on Intel Macs.
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2:arm64"
