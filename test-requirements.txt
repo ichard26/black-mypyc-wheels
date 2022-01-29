@@ -5,4 +5,4 @@ pytest >= 6.1.1
 
 # Used to assert compiled Black doesn't behave differently on a wide
 # selection of OSS code.
-https://github.com/ichard26/diff-shades/archive/stable.zip; python_version >= '3.7'
+# https://github.com/ichard26/diff-shades/archive/stable.zip; python_version >= '3.7'

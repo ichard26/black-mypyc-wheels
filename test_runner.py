@@ -7,15 +7,15 @@ base = [sys.executable, "-m"]
 
 
 @click.command()
-@click.argument("good-analysis", type=click.Path(resolve_path=True, exists=True))
-def main(good_analysis: str) -> None:
+# @click.argument("good-analysis", type=click.Path(resolve_path=True, exists=True))
+def main() -> None:
     print("===== [PYTEST] =====", flush=True)
     cmd = [
         *base, "pytest", "tests/",
         "-k", "not incompatible_with_mypyc", "--color=yes", "-v"
     ]
     subprocess.run(cmd, check=True)
-    if sys.version_info >= (3, 7):
+    if sys.version_info >= (3, 7) and False:
         sys.stdout.flush()
         print("===== [DIFF-SHADES - ANALYZE NEWLY BUILT WHEEL] ===== ", flush=True)
         cmd = [

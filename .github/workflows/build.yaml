@@ -12,51 +12,51 @@ on:
         default: default
 
 jobs:
-  prep:
-    name: "Analyze interpreted Black"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout requested revision of Black
-        uses: actions/checkout@v2
-        with:
-          repository: psf/black
-          ref: "${{ github.event.inputs.revision }}"
-          path: "."
+  # prep:
+  #   name: "Analyze interpreted Black"
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout requested revision of Black
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: psf/black
+  #         ref: "${{ github.event.inputs.revision }}"
+  #         path: "."
 
-      - uses: actions/setup-python@v2
+  #     - uses: actions/setup-python@v2
 
-      - name: Install diff-shades
-        run: python -m pip install https://github.com/ichard26/diff-shades/archive/stable.zip
+  #     - name: Install diff-shades
+  #       run: python -m pip install https://github.com/ichard26/diff-shades/archive/stable.zip
 
-      - name: Calculate partial cache key
-        id: cache-key
-        run: |
-          echo "::set-output name=key::$(python -c 'import diff_shades; print(diff_shades.__version__)')$(git log --format %H -n1)"
+  #     - name: Calculate partial cache key
+  #       id: cache-key
+  #       run: |
+  #         echo "::set-output name=key::$(python -c 'import diff_shades; print(diff_shades.__version__)')$(git log --format %H -n1)"
 
-      - name: Attempt to use cached baseline analysis
-        id: baseline-cache
-        uses: actions/cache@v2.1.7
-        with:
-          path: .known-good.analysis.json
-          key: ${{ runner.os }}-${{ steps.cache-key.outputs.key }}-${{ github.event.inputs.revision }}-${{ github.event.inputs.cache-breaker }}
+  #     - name: Attempt to use cached baseline analysis
+  #       id: baseline-cache
+  #       uses: actions/cache@v2.1.7
+  #       with:
+  #         path: .known-good.analysis.json
+  #         key: ${{ runner.os }}-${{ steps.cache-key.outputs.key }}-${{ github.event.inputs.revision }}-${{ github.event.inputs.cache-breaker }}
 
-      - name: Install requested revision of Black
-        if: steps.baseline-cache.outputs.cache-hit != 'true'
-        run: python -m pip install .[jupyter]
+  #     - name: Install requested revision of Black
+  #       if: steps.baseline-cache.outputs.cache-hit != 'true'
+  #       run: python -m pip install .[jupyter]
 
-      - name: Analyze requested revision of Black
-        if: steps.baseline-cache.outputs.cache-hit != 'true'
-        run: diff-shades analyze .known-good.analysis.json -v
+  #     - name: Analyze requested revision of Black
+  #       if: steps.baseline-cache.outputs.cache-hit != 'true'
+  #       run: diff-shades analyze .known-good.analysis.json -v
 
-      - name: Upload known good analysis
-        uses: actions/upload-artifact@v2
-        with:
-          name: .known-good.analysis.json
-          path: .known-good.analysis.json
+  #     - name: Upload known good analysis
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: .known-good.analysis.json
+  #         path: .known-good.analysis.json
 
   build:
     name: ${{ matrix.name }} (${{ matrix.os }})
-    needs: prep
+    # needs: prep
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -65,7 +65,7 @@ jobs:
             name: linux-x86_64
             # Black needs clang to compile successfully on Linux. -g0 disables debug symbols
             # which cuts down the wheel size a fair bit!
-            extra_environment: "CC=clang CFLAGS=-g0"
+            extra_environment: "CC=clang CFLAGS='-g0 -v'"
             extra_before_build: "&& yum install -y clang"
 
           - os: windows-2019
@@ -126,11 +126,11 @@ jobs:
       #      python -m pip install tomli tomli_w
       #      python .mypyc-support/prep_black.py
 
-      - name: Download known good analysis
-        uses: actions/download-artifact@v2
-        with:
-          name: ".known-good.analysis.json"
-          path: ".known-good.analysis.json"
+      # - name: Download known good analysis
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: ".known-good.analysis.json"
+      #     path: ".known-good.analysis.json"
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.3.0
@@ -144,13 +144,13 @@ jobs:
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
           CIBW_SKIP: "*-manylinux_i686 *-musllinux_* *-win32 pp-*"
 
-          # CIBW_MANYLINUX_X86_64_IMAGE: 'quay.io/pypa/manylinux2014_x86_64:2021-11-20-f410d11'
+          CIBW_MANYLINUX_X86_64_IMAGE: 'quay.io/pypa/manylinux2014_x86_64:2021-11-20-f410d11'
 
           CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
           CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
 
-          CIBW_BEFORE_TEST: "PIP_NO_BUILD_ISOLATION=yes pip install -r .mypyc-support/test-requirements.txt"
-          CIBW_TEST_COMMAND: "cd {project} ; python .mypyc-support/test_runner.py .known-good.analysis.json"
+          CIBW_BEFORE_TEST: "pip install -r .mypyc-support/test-requirements.txt"
+          CIBW_TEST_COMMAND: "cd {project} ; python .mypyc-support/test_runner.py"
           CIBW_TEST_EXTRAS: "d,jupyter"
           # Skip trying to test arm64 builds on Intel Macs.
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2:arm64"
