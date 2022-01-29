@@ -1,6 +1,6 @@
 # mypy == 0.910
 # mypy's release process is somehow worse than Black's now :(
-https://github.com/python/mypy/archive/7a5c6f0bdbd50757ffe0a826bd758f0d44780607.zip
+mypy @ https://github.com/python/mypy/archive/7a5c6f0bdbd50757ffe0a826bd758f0d44780607.zip
 
 # A bunch of packages for type annotation information
 mypy-extensions >= 0.4.3
@@ -13,4 +13,5 @@ click >= 8.0.0
 platformdirs >= 2.1.0
 
 # And because build isolation is disabled, we'll need to pull this too:
-setuptools-scm
+# setuptools-scm
+# (edit: actually not anymore!)
