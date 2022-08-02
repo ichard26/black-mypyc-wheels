@@ -53,7 +53,7 @@ jobs:
           path: .mypyc-support
 
       - name: Build wheels via cibuildwheel
-        uses: pypa/cibuildwheel@v2.3.0
+        uses: pypa/cibuildwheel@v2.8.1
         env:
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
           CIBW_MANYLINUX_X86_64_IMAGE: 'quay.io/pypa/manylinux2014_x86_64:2021-11-20-f410d11'
