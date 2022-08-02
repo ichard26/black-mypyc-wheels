@@ -145,7 +145,10 @@ jobs:
           CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 MYPYC_DEBUG_LEVEL=0 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
           CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
 
-          CIBW_BEFORE_TEST: "pip install -r .mypyc-support/test-requirements.txt"
+          # This is the bare minimum needed to run the test suite. Why not just use
+          # black's own `test_requirements.txt`? Well it pulls in stuff we don't
+          # need here for testing and that slows down the testing phase quite a bit.
+          CIBW_TEST_REQUIRES: "pytest >= 6.1.1"
           CIBW_TEST_COMMAND: 'pytest {project} -k "not incompatible_with_mypyc"'
           CIBW_TEST_EXTRAS: "d,jupyter"
           # Skip trying to test arm64 builds on Intel Macs.
