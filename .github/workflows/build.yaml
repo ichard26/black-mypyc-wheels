@@ -18,24 +18,14 @@ jobs:
         include:
           - os: ubuntu-latest
             name: linux-x86_64
-            # Black needs clang to compile successfully on Linux.
-            extra_environment: "CC=clang CFLAGS='-v'"
-            extra_before_build: "&& yum install -y clang"
 
           - os: windows-2019
             name: windows-amd64
-            # For some reason, (compiled) mypyc is failing to start up with
-            # "ImportError: DLL load failed: A dynamic link library (DLL) initialization routine failed."
-            # on Windows for at least 3.6. Let's just use interpreted mypy[c].
-            # See also: https://github.com/mypyc/mypyc/issues/819.
-            extra_before_build: "--no-binary mypy"
 
           - os: macos-12
             name: macos-x86_64
             macos_arch: "x86_64"
 
-          # Support Apple Silicon via cross-compiling on Intel. Unfornately arm64 can't
-          # be tested on Intel so we'll have to skip them (see below).
           - os: macos-12
             name: macos-arm64
             macos_arch: "arm64"
@@ -73,31 +63,9 @@ jobs:
       - name: Build wheels via cibuildwheel
         uses: pypa/cibuildwheel@v2.3.0
         env:
-          # So these are the environments we are targeting:
-          # - CPython 3.6 and higher (no PyPy)
-          # - 64-bit only
-          # - ARCH: amd64 / x86_64, universal2, and arm64
-          # - OSes: Linux (no musl), Windows, and MacOS
-          CIBW_BUILD: "cp3*-*"
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
-          CIBW_SKIP: "*-manylinux_i686 *-musllinux_* *-win32 pp-*"
-
           CIBW_MANYLINUX_X86_64_IMAGE: 'quay.io/pypa/manylinux2014_x86_64:2021-11-20-f410d11'
-
-          CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 MYPYC_DEBUG_LEVEL=0 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
-          CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
-
-          # This is the bare minimum needed to run the test suite. Why not just use
-          # black's own `test_requirements.txt`? Well it pulls in stuff we don't
-          # need here for testing and that slows down the testing phase quite a bit.
-          CIBW_TEST_REQUIRES: "pytest >= 6.1.1"
-          CIBW_TEST_COMMAND: 'pytest {project} -k "not incompatible_with_mypyc"'
-          CIBW_TEST_EXTRAS: "d,jupyter"
-          # Skip trying to test arm64 builds on Intel Macs.
-          CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2:arm64"
-
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.6.2"
-          CIBW_BUILD_VERBOSITY: 1
 
       - uses: actions/upload-artifact@v2
         with:
