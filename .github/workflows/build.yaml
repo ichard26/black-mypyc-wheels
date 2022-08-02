@@ -7,56 +7,10 @@ on:
         description: Revision from psf/black to compile.
         required: true
         default: main
-      cache-breaker:
-        description: Custom cache key trailer (to bypass cache)
-        default: default
 
 jobs:
-  # prep:
-  #   name: "Analyze interpreted Black"
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout requested revision of Black
-  #       uses: actions/checkout@v2
-  #       with:
-  #         repository: psf/black
-  #         ref: "${{ github.event.inputs.revision }}"
-  #         path: "."
-
-  #     - uses: actions/setup-python@v2
-
-  #     - name: Install diff-shades
-  #       run: python -m pip install https://github.com/ichard26/diff-shades/archive/stable.zip
-
-  #     - name: Calculate partial cache key
-  #       id: cache-key
-  #       run: |
-  #         echo "::set-output name=key::$(python -c 'import diff_shades; print(diff_shades.__version__)')$(git log --format %H -n1)"
-
-  #     - name: Attempt to use cached baseline analysis
-  #       id: baseline-cache
-  #       uses: actions/cache@v2.1.7
-  #       with:
-  #         path: .known-good.analysis.json
-  #         key: ${{ runner.os }}-${{ steps.cache-key.outputs.key }}-${{ github.event.inputs.revision }}-${{ github.event.inputs.cache-breaker }}
-
-  #     - name: Install requested revision of Black
-  #       if: steps.baseline-cache.outputs.cache-hit != 'true'
-  #       run: python -m pip install .[jupyter]
-
-  #     - name: Analyze requested revision of Black
-  #       if: steps.baseline-cache.outputs.cache-hit != 'true'
-  #       run: diff-shades analyze .known-good.analysis.json -v
-
-  #     - name: Upload known good analysis
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         name: .known-good.analysis.json
-  #         path: .known-good.analysis.json
-
   build:
     name: ${{ matrix.name }} (${{ matrix.os }})
-    # needs: prep
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -115,18 +69,7 @@ jobs:
         with:
           python-version: '3.x'
 
-      # - name: Prepare black for compilation
-      #   run: |
-      #      python -m pip install tomli tomli_w
-      #      python .mypyc-support/prep_black.py
-
-      # - name: Download known good analysis
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: ".known-good.analysis.json"
-      #     path: ".known-good.analysis.json"
-
-      - name: Build wheels
+      - name: Build wheels via cibuildwheel
         uses: pypa/cibuildwheel@v2.3.0
         env:
           # So these are the environments we are targeting:
