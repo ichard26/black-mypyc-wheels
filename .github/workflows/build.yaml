@@ -18,18 +18,14 @@ jobs:
         include:
           - os: ubuntu-latest
             name: linux-x86_64
-
           - os: windows-2019
             name: windows-amd64
-
           - os: macos-11
             name: macos-x86_64
             macos_arch: "x86_64"
-
           - os: macos-11
             name: macos-arm64
             macos_arch: "arm64"
-
           - os: macos-11
             name: macos-universal2
             macos_arch: "universal2"
@@ -55,10 +51,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: .mypyc-support
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
 
       - name: Build wheels via cibuildwheel
         uses: pypa/cibuildwheel@v2.3.0
