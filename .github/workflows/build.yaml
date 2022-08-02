@@ -90,10 +90,8 @@ jobs:
             macos_arch: "universal2"
 
     steps:
-      - uses: actions/checkout@v2
-
       - name: Checkout requested revision of Black
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: psf/black
           ref: "${{ github.event.inputs.revision }}"
@@ -109,11 +107,11 @@ jobs:
       # This MUST go after the initial clone of Black or else it would first clean this
       # directory and this clone as well before cloning Black.
       - name: Checkout this repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: .mypyc-support
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
