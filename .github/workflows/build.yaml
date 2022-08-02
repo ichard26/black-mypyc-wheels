@@ -63,9 +63,8 @@ jobs:
         include:
           - os: ubuntu-20.04
             name: linux-x86_64
-            # Black needs clang to compile successfully on Linux. -g0 disables debug symbols
-            # which cuts down the wheel size a fair bit!
-            extra_environment: "CC=clang CFLAGS='-g0 -v'"
+            # Black needs clang to compile successfully on Linux.
+            extra_environment: "CC=clang CFLAGS='-v'"
             extra_before_build: "&& yum install -y clang"
 
           - os: windows-2019
@@ -79,19 +78,16 @@ jobs:
           - os: macos-10.15
             name: macos-x86_64
             macos_arch: "x86_64"
-            extra_environment: "CFLAGS=-g0"
 
           # Support Apple Silicon via cross-compiling on Intel. Unfornately arm64 can't
           # be tested on Intel so we'll have to skip them (see below).
           - os: macos-10.15
             name: macos-arm64
             macos_arch: "arm64"
-            extra_environment: "CFLAGS=-g0"
 
           - os: macos-10.15
             name: macos-universal2
             macos_arch: "universal2"
-            extra_environment: "CFLAGS=-g0"
 
     steps:
       - uses: actions/checkout@v2
@@ -138,7 +134,7 @@ jobs:
           # So these are the environments we are targeting:
           # - CPython 3.6 and higher (no PyPy)
           # - 64-bit only
-          # - ARCH: amd64, x86_64, universal2, and arm64
+          # - ARCH: amd64 / x86_64, universal2, and arm64
           # - OSes: Linux (no musl), Windows, and MacOS
           CIBW_BUILD: "cp3*-*"
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
@@ -146,7 +142,7 @@ jobs:
 
           CIBW_MANYLINUX_X86_64_IMAGE: 'quay.io/pypa/manylinux2014_x86_64:2021-11-20-f410d11'
 
-          CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
+          CIBW_ENVIRONMENT: "BLACK_USE_MYPYC=1 MYPYC_OPT_LEVEL=3 MYPYC_DEBUG_LEVEL=0 PIP_NO_BUILD_ISOLATION=no ${{ matrix.extra_environment }}"
           CIBW_BEFORE_BUILD: "pip install -r .mypyc-support/mypyc-requirements.txt ${{ matrix.extra_before_build }}"
 
           CIBW_BEFORE_TEST: "pip install -r .mypyc-support/test-requirements.txt"
