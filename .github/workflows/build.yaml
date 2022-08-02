@@ -61,7 +61,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             name: linux-x86_64
             # Black needs clang to compile successfully on Linux.
             extra_environment: "CC=clang CFLAGS='-v'"
@@ -75,17 +75,17 @@ jobs:
             # See also: https://github.com/mypyc/mypyc/issues/819.
             extra_before_build: "--no-binary mypy"
 
-          - os: macos-10.15
+          - os: macos-12
             name: macos-x86_64
             macos_arch: "x86_64"
 
           # Support Apple Silicon via cross-compiling on Intel. Unfornately arm64 can't
           # be tested on Intel so we'll have to skip them (see below).
-          - os: macos-10.15
+          - os: macos-12
             name: macos-arm64
             macos_arch: "arm64"
 
-          - os: macos-10.15
+          - os: macos-12
             name: macos-universal2
             macos_arch: "universal2"
 
