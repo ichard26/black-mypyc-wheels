@@ -34,7 +34,7 @@ jobs:
       - name: Checkout requested revision of Black
         uses: actions/checkout@v3
         with:
-          repository: ofek/black
+          repository: psf/black
           ref: "${{ github.event.inputs.revision }}"
           path: "."
           # setuptools-scm needs the commit (or tag?) history to be able to determine
@@ -56,6 +56,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.9.0
         env:
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.6.2"
 
       - uses: actions/upload-artifact@v2
         with:
