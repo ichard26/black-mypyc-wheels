@@ -16,10 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            name: linux-x86_64
-          - os: windows-2019
-            name: windows-amd64
           - os: macos-11
             name: macos-x86_64
             macos_arch: "x86_64"
@@ -42,9 +38,6 @@ jobs:
           # do a treeless or blobless clone with actions/checkout ._.
           fetch-depth: 0
 
-      - name: Print debug information
-        run: git show HEAD --stat
-
       # This MUST go after the initial clone of Black or else it would first clean this
       # directory and this clone as well before cloning Black.
       - name: Checkout this repository
@@ -52,10 +45,19 @@ jobs:
         with:
           path: .mypyc-support
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.7"
+
+      - name: Print debug information
+        run: git show HEAD --stat && pip install packaging && python .mypyc-support/debug.py
+
       - name: Build wheels via cibuildwheel
         uses: pypa/cibuildwheel@v2.11.4
         env:
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7"
 
       - uses: actions/upload-artifact@v3
         with:
