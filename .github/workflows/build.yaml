@@ -52,6 +52,8 @@ jobs:
 
       - name: Print debug information
         run: git show HEAD --stat && pip install packaging && python .mypyc-support/debug.py
+        env:
+          SYSTEM_VERSION_COMPAT: "1"
 
       - name: Build wheels via cibuildwheel
         uses: pypa/cibuildwheel@v2.11.4
