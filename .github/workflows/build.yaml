@@ -45,21 +45,19 @@ jobs:
         with:
           path: .mypyc-support
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.7"
+      # - name: Set up Python
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: "3.7"
 
       - name: Print debug information
-        run: git show HEAD --stat && pip install packaging && python .mypyc-support/debug.py
-        env:
-          SYSTEM_VERSION_COMPAT: "1"
+        run: git show HEAD --stat
 
       - name: Build wheels via cibuildwheel
         uses: pypa/cibuildwheel@v2.11.4
         env:
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
-          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7"
+          # CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7"
 
       - uses: actions/upload-artifact@v3
         with:
