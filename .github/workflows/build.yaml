@@ -54,7 +54,7 @@ jobs:
         run: git show HEAD --stat
 
       - name: Build wheels via cibuildwheel
-        uses: pypa/cibuildwheel@v2.11.4
+        uses: pypa/cibuildwheel@v2.11.3
         env:
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
           # CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7"
